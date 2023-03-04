@@ -1,0 +1,251 @@
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  FlatList,
+  Animated,
+} from 'react-native';
+import React, {useRef, useEffect, useState,useCallback} from 'react';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Slider from '@react-native-community/slider';
+
+
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+const song = [
+  {
+    "title": "Death Bed",
+    "artist": "Powfu",
+    "artwork": "https://samplesongs.netlify.app/album-arts/death-bed.jpg",
+    "url": "https://samplesongs.netlify.app/Death%20Bed.mp3",
+    "id": "1"
+  },
+  {
+    "title": "Bad Liar",
+    "artist": "Imagine Dragons",
+    "artwork": "https://samplesongs.netlify.app/album-arts/bad-liar.jpg",
+    "url": "https://samplesongs.netlify.app/Bad%20Liar.mp3",
+    "id": "2"
+  },
+  {
+    "title": "Faded",
+    "artist": "Alan Walker",
+    "artwork": "https://samplesongs.netlify.app/album-arts/faded.jpg",
+    "url": "https://samplesongs.netlify.app/Faded.mp3",
+    "id": "3"
+  },
+  {
+    "title": "Hate Me",
+    "artist": "Ellie Goulding",
+    "artwork": "https://samplesongs.netlify.app/album-arts/hate-me.jpg",
+    "url": "https://samplesongs.netlify.app/Hate%20Me.mp3",
+    "id": "4"
+  },
+  {
+    "title": "Solo",
+    "artist": "Clean Bandit",
+    "artwork": "https://samplesongs.netlify.app/album-arts/solo.jpg",
+    "url": "https://samplesongs.netlify.app/Solo.mp3",
+    "id": "5"
+  },
+  {
+    "title": "Without Me",
+    "artist": "Halsey",
+    "artwork": "https://samplesongs.netlify.app/album-arts/without-me.jpg",
+    "url": "https://samplesongs.netlify.app/Without%20Me.mp3",
+    "id": "6"
+  }
+]
+
+const Music = () => {
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const [songtitle,setsongtitle]=useState(0);
+  const songslider=useRef(null);
+
+  useEffect(() => {
+    scrollX.addListener(({value}) => {
+      // console.log('scrollx', scrollX);
+      setsongtitle(Math.round(value/windowWidth))
+      //  console.log(Math.round(value/windowWidth))
+
+      return () => {
+        scrollX.removeAllListeners();
+      };
+
+    });
+  }, [scrollX]);
+
+
+  const skipToprev= ()=>{
+    songslider.current.scrollToOffset({
+      offset:(songtitle-1)*windowWidth,
+    })
+  }
+
+  const skipToNext= ()=>{
+    songslider.current.scrollToOffset({
+      offset:(songtitle+1)*windowWidth,
+    })
+  }
+
+  const RenderSong = React.memo(({item}) => {
+    return (
+      <Animated.View style={styles.view1}>
+        <View style={styles.render}>
+          <Image
+            source={{
+              uri: item.artwork,
+            }}
+            style={{width: '100%', height: '100%', borderRadius: 10}}
+          />
+        </View>
+      </Animated.View>
+    );
+  });
+
+  const renderItem = ({item}) => {
+    return <RenderSong item={item} />;
+  };
+
+
+  const handleScroll = useCallback(
+    Animated.event(
+      [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+      { useNativeDriver: true }
+    ),
+    []
+  );
+ 
+  
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.maincontainer}>
+        <View style={{width:windowWidth}}>
+        <Animated.FlatList
+         ref={songslider}
+          data={song}
+          renderItem={renderItem}
+          keyExtractor={el => el.id}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          scrollEventThrottle={1}
+          onScroll={handleScroll}
+        />
+        </View>
+
+        <View>
+          <Text style={{alignSelf: 'center', fontSize: 18, fontWeight: '700'}}>
+         { song[songtitle].title}
+          </Text>
+          <Text style={{alignSelf: 'center'}}>{song[songtitle].artist}</Text>
+        </View>
+        <View style={{width: '90%'}}>
+          <Slider
+            style={styles.progreeslider}
+            value={10}
+            minimumValue={0}
+            maximumValue={100}
+            thumbTintColor="#D369"
+            minimumTrackTintColor="#D369"
+            maximumTrackTintColor="#ffff"
+            onSlidingComplete={() => {}}
+            
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '95%',
+              alignSelf: 'center',
+            }}>
+            <Text>0:00</Text>
+            <Text>2:00</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity onPress={skipToprev}> 
+              <Ionicons name="play-skip-back-outline" size={25} />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Ionicons name="play-circle" size={45} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={skipToNext}> 
+              <Ionicons name="play-skip-forward-outline" size={25} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+      <View style={styles.bottom}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '90%',
+          }}>
+          <TouchableOpacity>
+            <Ionicons name="heart-outline" size={30} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Ionicons name="repeat" size={30} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Ionicons name="share-outline" size={30} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Ionicons name="ellipsis-horizontal-outline" size={30} />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default Music;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffa30a',
+  },
+  maincontainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bottom: {
+    alignItems: 'center',
+    borderTopWidth: 0.5,
+    borderColor: 'white',
+    height: 50,
+    justifyContent: 'center',
+  },
+  progreeslider: {
+    width: '100%',
+    height: 30,
+    
+  },
+  render: {
+    width: windowWidth - 50,
+    height: windowWidth - 50,
+    borderWidth: 0.4,
+    borderRadius: 10,
+    elevation: 20,
+  },
+  view1: {
+    width: windowWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+   
+  },
+});
