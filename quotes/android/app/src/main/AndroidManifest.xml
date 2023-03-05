@@ -9,6 +9,10 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
+      <service android:name="com.reactnativecommunity.trackplayer.service.MusicService" android:exported="false" />
+     <receiver android:name="com.reactnativecommunity.trackplayer.service.MediaButtonReceiver" />
+     <service android:name="com.reactnativecommunity.trackplayer.service.DownloadService" />
+
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
