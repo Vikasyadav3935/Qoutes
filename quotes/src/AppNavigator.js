@@ -3,7 +3,8 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Home from './Screens/Home';
-import Music from './Screens/Music'
+import List from './Screens/List';
+
 
 
 const AppNavigator = () => {
@@ -12,17 +13,19 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-       
+     
+      <Stack.Screen
+          name="Music App"
+          component={List}
+          options={{headerShown: true}}
+        />
         <Stack.Screen
           name="Home"
           component={Home}
           options={{headerShown: false}}
         />
-         <Stack.Screen
-          name="Music"
-          component={Music}
-          options={{headerShown: true}}
-        />
+        
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

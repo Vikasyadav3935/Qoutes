@@ -3,11 +3,11 @@ import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import Music from './Music';
 
-const Home = () => {
+const Home = ({route}) => {
   return (
     <View style={{flex:1}}>
      <StatusBar barStyle={'default'} backgroundColor='orange' />
-      <Music/>
+      <Music route={route}/>
     </View>
   )
 }

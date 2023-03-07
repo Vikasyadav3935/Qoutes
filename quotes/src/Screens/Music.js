@@ -21,8 +21,10 @@ import TrackPlayer, {
   useProgress,
   useTrackPlayerEvents,
 } from 'react-native-track-player';
+import { Time } from '../components/Time';
 
 // import { song } from '../Modal/Data';
+
 
 export const song = [
   {
@@ -84,8 +86,6 @@ const setupPlayer = async () => {
         Capability.SkipToPrevious,
         Capability.Stop,
       ],
-
-      // Capabilities that will show up when the notification is in the compact form on Android
       compactCapabilities: [Capability.Play, Capability.Pause],
     });
   } catch (error) {
@@ -107,37 +107,53 @@ const togglePlayback = async playbackState => {
   }
 };
 
-const Music = () => {
+const Music = ({route,navigation}) => {
   const playbackState = usePlaybackState();
   const progress =useProgress();
 
+  
+
+ 
+const {itemId}=route.params;
+console.log(itemId)
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [songtitle, setsongtitle] = useState(0);
+  const [songtitle, setsongtitle] = useState(itemId);
   const songslider = useRef(null);
 
-  useEffect(() => {
-    changesong();
-  }, [songtitle]);
-  const changesong = async () => {
-    await TrackPlayer.skip(songtitle);
-   
-  };
-
+  // console.log(route);
   useEffect(() => {
     if (playbackState === 'idle') {
       setupPlayer();
     }
 
     scrollX.addListener(({value}) => {
-      // console.log('scrollx', scrollX);
+      
       setsongtitle(Math.round(value / windowWidth));
-      //  console.log(Math.round(value/windowWidth))
+   
 
       return () => {
         scrollX.removeAllListeners();
       };
     });
   }, [scrollX]);
+  
+
+  useEffect(() => {
+   if(playbackState !=='idle'){
+    changesong();
+   }
+   
+  }, [songtitle]);
+  const changesong = async () => {
+    songslider.current.scrollToOffset({
+      offset: (songtitle) * windowWidth,
+    });
+    await TrackPlayer.skip(songtitle);
+   
+  };
+
+  
+
 
   const skipToprev = async () => {
     songslider.current.scrollToOffset({
@@ -179,7 +195,7 @@ const Music = () => {
     [],
   );
 
-  console.log(progress)
+  console.log(progress)   
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.maincontainer}>
@@ -227,8 +243,8 @@ const Music = () => {
               width: '95%',
               alignSelf: 'center',
             }}>
-            <Text>{Math.floor(progress.position/60)+ ':'+Math.round((progress.position - Math.floor(progress.position)) * 60)}</Text>
-            <Text>{Math.floor(progress.duration/60)+ ':'+Math.round((progress.duration - Math.floor(progress.duration)) * 60)}</Text>
+            <Text>{Time(progress.position)}</Text>
+            <Text>{Time(progress.duration)}</Text>
           </View>
           <View
             style={{
@@ -255,7 +271,7 @@ const Music = () => {
           </View>
         </View>
       </View>
-      <View style={styles.bottom}>
+      {/* <View style={styles.bottom}>
         <View
           style={{
             flexDirection: 'row',
@@ -275,7 +291,7 @@ const Music = () => {
             <Ionicons name="ellipsis-horizontal-outline" size={30} />
           </TouchableOpacity>
         </View>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };
